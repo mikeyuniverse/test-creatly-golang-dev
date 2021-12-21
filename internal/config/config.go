@@ -4,7 +4,7 @@ import "github.com/kelseyhightower/envconfig"
 
 const (
 	SERVER_PREFIX     = "SERVER"
-	REPOSITORY_PREFIX = "POSTGRES"
+	REPOSITORY_PREFIX = "MONGO"
 )
 
 type Server struct {
@@ -12,23 +12,29 @@ type Server struct {
 }
 
 func newServer(prefix string) (*Server, error) {
-	var s *Server
-	err := envconfig.Process(prefix, s)
+	var s Server
+	err := envconfig.Process(prefix, &s)
 	if err != nil {
 		return nil, err
 	}
-	return s, nil
+	return &s, nil
 }
 
-type Repo struct{}
+type Repo struct {
+	Port             string
+	DatabaseName     string
+	UsersCollection  string
+	FilesCollection  string
+	TokensCollection string
+}
 
 func newRepo(prefix string) (*Repo, error) {
-	var r *Repo
-	err := envconfig.Process(prefix, r)
+	var r Repo
+	err := envconfig.Process(prefix, &r)
 	if err != nil {
 		return nil, err
 	}
-	return r, nil
+	return &r, nil
 }
 
 type Config struct {
