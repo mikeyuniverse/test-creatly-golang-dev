@@ -4,6 +4,8 @@ import (
 	"creatly-task/internal/config"
 	"creatly-task/internal/mongodb"
 	"creatly-task/internal/repo"
+	"creatly-task/internal/server"
+	"creatly-task/internal/services"
 	"log"
 )
 
@@ -18,19 +20,16 @@ func main() {
 		log.Fatalf(" - - - - - - - DATABASE NOT INIT.\n%s", err)
 	}
 
-	repo.New(db, config.Repo)
+	repo := repo.New(db, config.Repo)
 	if err != nil {
 		log.Fatalf(" - - - - - - - REPOSITORY NOT INIT.\n%s", err)
 	}
 
-	// services, err := services.New(repo)
-	// if err != nil {
-	// 	log.Fatalf(" - - - - - - - SERVICES NOT INIT.\n%s", err)
-	// }
+	services := services.New(repo)
 
-	// server := server.New(config.Server, services)
+	server := server.New(config.Server, services)
 
-	// if err := server.Start(); err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err := server.Start(); err != nil {
+		log.Fatal(err)
+	}
 }
