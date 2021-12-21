@@ -1,6 +1,6 @@
 # test-creatly-golang-dev
 
-Task - [Task for golang dev (Creatly)](task.md)
+Task - [Task for golang dev (Creatly)](Task.md)
 
 ## Description
 
