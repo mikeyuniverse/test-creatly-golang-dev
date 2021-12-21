@@ -21,6 +21,7 @@ func newServer(prefix string) (*Server, error) {
 }
 
 type Repo struct {
+	Host             string
 	Port             string
 	DatabaseName     string
 	UsersCollection  string
