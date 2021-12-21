@@ -13,6 +13,9 @@ It is necessary to implement a web service that will have the following endpoint
 
 ## Run
 
-
+```go
+go run cmd/main.go
+```
 
 ## Tests
+
