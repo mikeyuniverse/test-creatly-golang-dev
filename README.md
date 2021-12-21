@@ -4,7 +4,7 @@ Task - [Task for golang dev (Creatly)](Task.md)
 
 ## Description
 
-Необходимо реализовать веб-сервис, который будет обладать следующими эндпоинтами
+It is necessary to implement a web service that will have the following endpoints
 
 - POST /sign-up
 - POST /sign-in
