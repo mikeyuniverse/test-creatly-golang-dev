@@ -15,16 +15,16 @@ type Server struct {
 func NewServer(config *config.Server, handlers Handlers) *Server {
 	server := gin.Default()
 
-	auth := server.Group("/auth")
+	auth := server.Group("/")
 	{
 		auth.POST("/sign-up", handlers.SignUp)
 		auth.POST("/sign-in", handlers.SignUp)
 	}
 
-	files := server.Group("/files")
+	files := server.Group("/")
 	{
 		files.Use(handlers.AuthMiddleware)
-		files.GET("", handlers.Files)
+		files.GET("/files", handlers.Files)
 		files.POST("/upload", handlers.UploadFile)
 	}
 
