@@ -1,10 +1,18 @@
 package config
 
-import "github.com/kelseyhightower/envconfig"
+import (
+	"fmt"
+	"time"
+
+	"github.com/joho/godotenv"
+	"github.com/kelseyhightower/envconfig"
+)
 
 const (
 	SERVER_PREFIX     = "SERVER"
 	REPOSITORY_PREFIX = "MONGO"
+	FILE_PREFIX       = "FILE"
+	STORAGE_PREFIX    = "STORAGE"
 )
 
 type Server struct {
@@ -38,12 +46,52 @@ func newRepo(prefix string) (*Repo, error) {
 	return &r, nil
 }
 
-type Config struct {
-	Server *Server
-	Repo   *Repo
+type File struct {
+	Limit int64
 }
 
-func New() (*Config, error) {
+func newFileConfig(prefix string) (*File, error) {
+	var f File
+	err := envconfig.Process(prefix, &f)
+	if err != nil {
+		return nil, err
+	}
+	return &f, nil
+}
+
+type Storage struct {
+	AccessKey  string
+	SecretKey  string
+	Region     string
+	BucketName string
+	Timeout    time.Duration
+}
+
+func newStorageConfig(prefix string) (*Storage, error) {
+	var s Storage
+	err := envconfig.Process(prefix, &s)
+
+	fmt.Printf("%+v\n", s)
+
+	if err != nil {
+		return nil, err
+	}
+	return &s, nil
+}
+
+type Config struct {
+	Server  *Server
+	Repo    *Repo
+	Files   *File
+	Storage *Storage
+}
+
+func New(filename string) (*Config, error) {
+	err := godotenv.Load(filename)
+	if err != nil {
+		return nil, err
+	}
+
 	server, err := newServer(SERVER_PREFIX)
 	if err != nil {
 		return nil, err
@@ -54,8 +102,20 @@ func New() (*Config, error) {
 		return nil, err
 	}
 
+	file, err := newFileConfig(FILE_PREFIX)
+	if err != nil {
+		return nil, err
+	}
+
+	storage, err := newStorageConfig(STORAGE_PREFIX)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
-		Server: server,
-		Repo:   repo,
+		Server:  server,
+		Repo:    repo,
+		Files:   file,
+		Storage: storage,
 	}, nil
 }
