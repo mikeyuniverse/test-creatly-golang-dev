@@ -6,11 +6,12 @@ import (
 	"creatly-task/internal/repo"
 	"creatly-task/internal/server"
 	"creatly-task/internal/services"
+	"creatly-task/pkg/storage"
 	"log"
 )
 
 func main() {
-	config, err := config.New()
+	config, err := config.New(".env")
 	if err != nil {
 		log.Fatalf(" - - - - - - - CONFIG NOT INIT.\n%s", err)
 	}
@@ -20,14 +21,19 @@ func main() {
 		log.Fatalf(" - - - - - - - DATABASE NOT INIT.\n%s", err)
 	}
 
-	repo := repo.New(db, config.Repo)
+	storage, err := storage.New(config.Storage)
+	if err != nil {
+		log.Fatalf(" - - - - - - - STORAGE NOT INIT.\n%s", err)
+	}
+
+	repo := repo.New(db, storage, config.Repo)
 	if err != nil {
 		log.Fatalf(" - - - - - - - REPOSITORY NOT INIT.\n%s", err)
 	}
 
 	services := services.New(repo)
 
-	handlers := server.NewHandlers(services, config.MaxSizeFileLimit)
+	handlers := server.NewHandlers(services, config.Files.Limit)
 
 	server := server.NewServer(config.Server, *handlers)
 
