@@ -28,8 +28,8 @@ type Repo struct {
 // TODO Implementation of interfaces
 func New(db *mongodb.Mongo, storage *storage.Storage, config *config.Repo) *Repo {
 	return &Repo{
-		// Users:  newUsersRepo(db, config.UsersCollection),
-		// Tokens: newTokensRepo(db, config.TokensCollection),
-		// Files:  newFilesRepo(db, config.FilesCollection),
+		Users:  newUsersRepo(db, config.UsersCollection),
+		Tokens: newTokensRepo(db, config.TokensCollection),
+		Files:  newFilesRepo(db, config.FilesCollection),
 	}
 }
