@@ -10,7 +10,9 @@ type Users interface {
 	CreateUser(*models.UserSignUpInput) error
 }
 
-type Tokens interface{}
+type Tokens interface {
+	GetUserIDByToken(token string) (int64, error) // Получение userID по токену
+}
 
 type Files interface {
 	All() ([]models.FileOut, error)
@@ -25,8 +27,8 @@ type Repo struct {
 // TODO Implementation of interfaces
 func New(db *mongodb.Mongo, config *config.Repo) *Repo {
 	return &Repo{
-		Users:  newUsersRepo(db, config.UsersCollection),
-		Tokens: newTokensRepo(db, config.TokensCollection),
-		Files:  newFilesRepo(db, config.FilesCollection),
+		// Users:  newUsersRepo(db, config.UsersCollection),
+		// Tokens: newTokensRepo(db, config.TokensCollection),
+		// Files:  newFilesRepo(db, config.FilesCollection),
 	}
 }
