@@ -3,6 +3,7 @@ package server
 import (
 	"creatly-task/internal/models"
 	"creatly-task/internal/services"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -43,12 +44,14 @@ func (h *Handlers) SignIn(c *gin.Context) {
 
 	c.Bind(&user)
 
-	err := h.services.SignIn(&user)
+	token, err := h.services.SignIn(&user)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, textToMap("invalid creds"))
 		return
 	}
+
+	fmt.Printf("SUCCESS: SignIn\nToken - %s\n", token)
 
 }
 
