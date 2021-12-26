@@ -27,7 +27,9 @@ func main() {
 
 	services := services.New(repo)
 
-	server := server.New(config.Server, services)
+	handlers := server.NewHandlers(services, config.MaxSizeFileLimit)
+
+	server := server.NewServer(config.Server, *handlers)
 
 	if err := server.Start(); err != nil {
 		log.Fatal(err)
