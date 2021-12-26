@@ -51,7 +51,7 @@ func (s *Services) UploadFile(file *models.FileUploadInput) error {
 }
 
 func (s *Services) GetUserIdByToken(token string) (int64, error) {
-	userId, err := s.db.Tokens.GetUserIdByToken(token)
+	userId, err := s.db.Tokens.GetUserIDByToken(token)
 	if err != nil {
 		return 0, err
 	}
