@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -70,9 +69,6 @@ type Storage struct {
 func newStorageConfig(prefix string) (*Storage, error) {
 	var s Storage
 	err := envconfig.Process(prefix, &s)
-
-	fmt.Printf("%+v\n", s)
-
 	if err != nil {
 		return nil, err
 	}
