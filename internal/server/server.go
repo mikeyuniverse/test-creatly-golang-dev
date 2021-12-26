@@ -2,12 +2,14 @@ package server
 
 import (
 	"creatly-task/internal/config"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
 	httpServer *gin.Engine
+	port       string
 }
 
 func NewServer(config *config.Server, handlers Handlers) *Server {
@@ -28,11 +30,12 @@ func NewServer(config *config.Server, handlers Handlers) *Server {
 
 	return &Server{
 		httpServer: server,
+		port:       config.Port,
 	}
 }
 
 func (s *Server) Start() error {
-	err := s.httpServer.Run()
+	err := s.httpServer.Run(fmt.Sprintf(":%s", s.port))
 	if err != nil {
 		return err
 	}
