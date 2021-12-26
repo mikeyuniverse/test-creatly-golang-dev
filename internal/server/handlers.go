@@ -64,15 +64,13 @@ func (h *Handlers) AuthMiddleware(c *gin.Context) {
 
 	// TODO Check: token is valid?
 
-	// TODO Get userId by token
 	userId, err := h.services.GetUserIdByToken(token)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, textToMap("unauthorized"))
 		return
 	}
 
-	// TODO Pass userId in context
-	c.Set("userID", userId)
+	c.Set("userID", userId) // Pass userId in context
 
 	c.Next()
 }
@@ -88,6 +86,12 @@ func (h *Handlers) Files(c *gin.Context) {
 }
 
 func (h *Handlers) UploadFile(c *gin.Context) {
+	userID := c.GetInt("userID")
+	if userID == 0 {
+		c.JSON(http.StatusUnauthorized, textToMap("unknown userID"))
+		return
+	}
+
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, textToMap("file not found"))
@@ -95,16 +99,19 @@ func (h *Handlers) UploadFile(c *gin.Context) {
 	}
 
 	filename := header.Filename
+	// TODO Check filename and format of file
+
 	size := header.Size
 	if size >= h.MaxSizeLimit {
+		fmt.Printf("Want filesize - %d\nAccept filesize - %d\n", h.MaxSizeLimit, size)
 		c.JSON(http.StatusBadRequest, textToMap("file too large"))
 		return
 	}
 
 	err = h.services.UploadFile(&models.FileUploadInput{
 		Filename: filename,
-		Volume:   size,
-		UserId:   123, // TODO Accept userID from context or by token
+		Size:     size,
+		UserId:   userID,
 		FileData: file,
 	})
 
