@@ -42,7 +42,13 @@ func (h *Handlers) SignIn(c *gin.Context) {
 	// TODO How auth?
 	var user models.UserSignInInput
 
-	c.Bind(&user)
+	err := c.Bind(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, textToMap("invalid credentials"))
+		return
+	}
+
+	// user.PasswordHash = hasher.Hash(user.PasswordHash)
 
 	token, err := h.services.SignIn(&user)
 
