@@ -4,6 +4,7 @@ import (
 	"creatly-task/internal/config"
 	"creatly-task/internal/models"
 	"creatly-task/internal/mongodb"
+	"creatly-task/pkg/storage"
 )
 
 type Users interface {
@@ -25,7 +26,7 @@ type Repo struct {
 }
 
 // TODO Implementation of interfaces
-func New(db *mongodb.Mongo, config *config.Repo) *Repo {
+func New(db *mongodb.Mongo, storage *storage.Storage, config *config.Repo) *Repo {
 	return &Repo{
 		// Users:  newUsersRepo(db, config.UsersCollection),
 		// Tokens: newTokensRepo(db, config.TokensCollection),
