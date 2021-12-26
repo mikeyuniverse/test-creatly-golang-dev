@@ -22,6 +22,7 @@ func (s *Services) SignUp(user *models.UserSignUpInput) error {
 // TODO Implementation SignIn
 func (s *Services) SignIn(user *models.UserSignInInput) (string, error) {
 	// Get Userdata by email from database
+	// s.db.Users.GetUserByCreds(user)
 	// If User not found in DB
 	//     return errors.New("email not found")
 	// If UserPasswordHash != passwordHashDB
