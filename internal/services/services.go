@@ -10,6 +10,7 @@ import (
 // TODO Create interface for Tokener
 type Tokener interface {
 	GenerateToken(userId string) (string, error)
+	ParseToken(token string) (string, error)
 }
 
 // TODO Create interface for Cloud Storage
@@ -80,6 +81,10 @@ func (s *Services) GetUserIdByToken(token string) (int64, error) {
 	return userId, nil
 }
 
-func (s *Services) ParseToken(token string) error {
-	return nil
+func (s *Services) ParseToken(token string) (string, error) {
+	userID, err := s.tokener.ParseToken(token)
+	if err != nil {
+		return "", err
+	}
+	return userID, nil
 }
