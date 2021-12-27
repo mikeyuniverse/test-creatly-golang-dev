@@ -18,7 +18,7 @@ func NewServer(config *config.Server, handlers Handlers) *Server {
 	auth := server.Group("/")
 	{
 		auth.POST("/sign-up", handlers.SignUp)
-		auth.POST("/sign-in", handlers.SignUp)
+		auth.POST("/sign-in", handlers.SignIn)
 	}
 
 	files := server.Group("/")
