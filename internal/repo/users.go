@@ -33,7 +33,9 @@ func (u *UserStorage) CreateUser(input *models.UserSignUpInput) error {
 
 func (u *UserStorage) checkUserExists(email string) error {
 	result := u.db.FindOne(context.TODO(), bson.M{"email": email})
+
 	if result.Err() == mongo.ErrNoDocuments {
+		// User with this email not exists
 		return nil
 	}
 
@@ -44,7 +46,10 @@ func (u *UserStorage) checkUserExists(email string) error {
 	}
 
 	if dbUser.Email != "" {
+		// User with this email exists
 		return errors.New("user exists")
 	}
+
+	// TODO Unknown logic: whats doing?
 	return nil
 }
