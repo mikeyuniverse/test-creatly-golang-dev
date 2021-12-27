@@ -16,9 +16,16 @@ func New(salt string) *Hasher {
 func (h *Hasher) Hash(password string) (string, error) {
 	hash := sha1.New()
 
-	if _, err := hash.Write([]byte(password)); err != nil {
+	_, err := hash.Write([]byte(password))
+	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("%x", hash.Sum([]byte(h.salt))), nil
+	_, err = hash.Write([]byte(h.salt))
+	if err != nil {
+		return "", err
+	}
+
+	passwordHash := fmt.Sprintf("%x", hash.Sum([]byte(h.salt)))
+	return passwordHash, nil
 }
