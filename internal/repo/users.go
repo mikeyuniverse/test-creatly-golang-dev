@@ -4,7 +4,9 @@ import (
 	"context"
 	"creatly-task/internal/models"
 	"creatly-task/internal/mongodb"
+	"errors"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -20,11 +22,29 @@ func newUsersRepo(mongo *mongodb.Mongo, collectionName string) *UserStorage {
 }
 
 func (u *UserStorage) CreateUser(input *models.UserSignUpInput) error {
+	err := u.checkUserExists(input.Email)
+	if err != nil {
+		return err
+	}
+
 	u.db.InsertOne(context.TODO(), input)
 	return nil
 }
 
-func (u *UserStorage) GetUserByCreds(input *models.UserSignInInput) error {
-	u.db.InsertOne(context.TODO(), input)
+func (u *UserStorage) checkUserExists(email string) error {
+	result := u.db.FindOne(context.TODO(), bson.M{"email": email})
+	if result.Err() == mongo.ErrNoDocuments {
+		return nil
+	}
+
+	var dbUser models.UserSignInInput
+	err := result.Decode(&dbUser)
+	if err != nil {
+		return err
+	}
+
+	if dbUser.Email != "" {
+		return errors.New("user exists")
+	}
 	return nil
 }
