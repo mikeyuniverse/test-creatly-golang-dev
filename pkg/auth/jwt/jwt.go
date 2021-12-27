@@ -1,6 +1,7 @@
 package jwtauth
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -34,6 +35,32 @@ func (j *JWTTokener) GenerateToken(userId string) (string, error) {
 	return tokenString, nil
 }
 
-func (j *JWTTokener) ParseToken() {
+func (j *JWTTokener) ParseToken(token string) (string, error) {
+	acceptedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return j.signinKey, nil
+	})
 
+	if err != nil {
+		return "", err
+	}
+
+	if acceptedToken.Valid {
+		return "", errors.New("invalid token")
+	}
+
+	claims, ok := acceptedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("invalid claims")
+	}
+
+	subject, ok := claims["sub"].(string)
+	if !ok {
+		return "", errors.New("invalid claims - subject")
+	}
+
+	return subject, nil
 }
