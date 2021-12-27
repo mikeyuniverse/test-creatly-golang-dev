@@ -26,12 +26,14 @@ func (j *JWTTokener) GenerateToken(userId string) (string, error) {
 		Subject:   userId,
 	})
 
-	fmt.Printf("SIGNING KEY - '%s'\n", j.signinKey)
 	tokenString, err := token.SignedString(j.signinKey)
 	if err != nil {
 		return "", fmt.Errorf("error with signing token - %s", err.Error())
 	}
 
-	fmt.Println("Token: success generated, Token - ", tokenString)
 	return tokenString, nil
+}
+
+func (j *JWTTokener) ParseToken() {
+
 }
