@@ -1,32 +1,37 @@
 package jwtauth
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 )
 
 type JWTTokener struct {
-	signinKey string
+	signinKey []byte
 	tokenTTL  time.Duration
 }
 
 func New(signinKey string, tokenTTL time.Duration) *JWTTokener {
 	return &JWTTokener{
-		signinKey: signinKey,
+		signinKey: []byte(signinKey),
 		tokenTTL:  tokenTTL,
 	}
 }
 
-func (j *JWTTokener) GenerateToken(userId int) (string, error) {
-	// Create the token
-	token := jwt.New(jwt.SigningMethodHS256)
-	// Set some claims
-	claims := make(jwt.MapClaims)
-	claims["userID"] = userId
-	claims["exp"] = time.Now().Add(time.Second * j.tokenTTL).Unix()
-	token.Claims = claims
-	// Sign and get the complete encoded token as a string
+func (j *JWTTokener) GenerateToken(userId string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(time.Second * j.tokenTTL).Unix(),
+		IssuedAt:  time.Now().Unix(),
+		Subject:   userId,
+	})
+
+	fmt.Printf("SIGNING KEY - '%s'\n", j.signinKey)
 	tokenString, err := token.SignedString(j.signinKey)
-	return tokenString, err
+	if err != nil {
+		return "", fmt.Errorf("error with signing token - %s", err.Error())
+	}
+
+	fmt.Println("Token: success generated, Token - ", tokenString)
+	return tokenString, nil
 }
