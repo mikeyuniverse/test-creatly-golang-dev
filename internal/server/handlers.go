@@ -95,24 +95,12 @@ func (h *Handlers) AuthMiddleware(c *gin.Context) {
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 
-	h.services.ParseToken(token)
+	userID, err := h.services.ParseToken(token)
+	if err != nil {
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
 
-	// err := h.services.ParseToken()
-
-	// token, err := h.checkTokenFromHeader(c)
-	// if err != nil {
-	// 	// TODO Change Abort type (delete error text)
-	// 	c.AbortWithError(http.StatusUnauthorized, err)
-	// 	return
-	// }
-
-	// 	userId, err := h.services.GetUserIdByToken(token)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusUnauthorized, textToMap("unauthorized"))
-	// 		return
-	// 	}
-
-	// 	c.Set("userID", userId) // Pass userId in context
+	fmt.Println("USER AUTHORIZED - ", userID)
 
 	c.Next()
 }
