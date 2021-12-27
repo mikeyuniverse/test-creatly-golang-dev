@@ -6,12 +6,16 @@ import (
 	"creatly-task/internal/repo"
 	"creatly-task/internal/server"
 	"creatly-task/internal/services"
+	jwtauth "creatly-task/pkg/auth/jwt"
 	"creatly-task/pkg/hasher"
 	"creatly-task/pkg/storage"
 	"log"
 )
 
-const SALT = "923undwpinpwq3bp" // Соль для хеширования паролей
+// TODO ADD THIS CONSTANTS IN CONFIGURATION
+const SALT = "923undwpinpwq3bp" // Salt for password hashing
+const JWT_SIGNING_KEY = "aisdbup872d3bib28d3"
+const JWT_TOKEN_TTL = 600 // Seconds
 
 func main() {
 	config, err := config.New(".env")
@@ -34,7 +38,9 @@ func main() {
 		log.Fatalf(" - - - - - - - REPOSITORY NOT INIT.\n%s", err)
 	}
 
-	services := services.New(repo)
+	tokener := jwtauth.New(JWT_SIGNING_KEY, JWT_TOKEN_TTL)
+
+	services := services.New(repo, tokener, storage)
 
 	hasher := hasher.New(SALT)
 	handlers := server.NewHandlers(services, config.Files.Limit, hasher)
