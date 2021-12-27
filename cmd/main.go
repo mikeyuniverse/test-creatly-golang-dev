@@ -6,9 +6,12 @@ import (
 	"creatly-task/internal/repo"
 	"creatly-task/internal/server"
 	"creatly-task/internal/services"
+	"creatly-task/pkg/hasher"
 	"creatly-task/pkg/storage"
 	"log"
 )
+
+const SALT = "923undwpinpwq3bp" // Соль для хеширования паролей
 
 func main() {
 	config, err := config.New(".env")
@@ -33,7 +36,8 @@ func main() {
 
 	services := services.New(repo)
 
-	handlers := server.NewHandlers(services, config.Files.Limit)
+	hasher := hasher.New(SALT)
+	handlers := server.NewHandlers(services, config.Files.Limit, hasher)
 
 	server := server.NewServer(config.Server, *handlers)
 

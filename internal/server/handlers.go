@@ -11,13 +11,18 @@ import (
 
 const COOKIE_NAME = "token"
 
+type Hasher interface {
+	Hash(password string) (string, error)
+}
+
 type Handlers struct {
 	services     *services.Services
 	MaxSizeLimit int64
+	hasher       Hasher
 }
 
-func NewHandlers(services *services.Services, FileSizeLimit int64) *Handlers {
-	return &Handlers{services: services, MaxSizeLimit: FileSizeLimit}
+func NewHandlers(services *services.Services, FileSizeLimit int64, hasher Hasher) *Handlers {
+	return &Handlers{services: services, MaxSizeLimit: FileSizeLimit, hasher: hasher}
 }
 
 func (h *Handlers) SignUp(c *gin.Context) {
@@ -29,17 +34,22 @@ func (h *Handlers) SignUp(c *gin.Context) {
 		return
 	}
 
+	input.Password, err = h.hasher.Hash(input.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, textToMap("error while encrypting password"))
+		return
+	}
+
 	err = h.services.SignUp(&input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, textToMap("error while creating an account"))
 		return
 	}
 
-	c.JSON(http.StatusOK, textToMap("ok"))
+	c.JSON(http.StatusOK, textToMap("success"))
 }
 
 func (h *Handlers) SignIn(c *gin.Context) {
-	// TODO How auth?
 	var user models.UserSignInInput
 
 	err := c.Bind(&user)
@@ -48,17 +58,19 @@ func (h *Handlers) SignIn(c *gin.Context) {
 		return
 	}
 
-	// user.PasswordHash = hasher.Hash(user.PasswordHash)
+	user.PasswordHash, err = h.hasher.Hash(user.PasswordHash)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, textToMap("error while encrypting password"))
+		return
+	}
 
 	token, err := h.services.SignIn(&user)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, textToMap("invalid creds"))
 		return
 	}
 
-	fmt.Printf("SUCCESS: SignIn\nToken - %s\n", token)
-
+	c.JSON(http.StatusOK, map[string]string{"token": token})
 }
 
 func (h *Handlers) AuthMiddleware(c *gin.Context) {
