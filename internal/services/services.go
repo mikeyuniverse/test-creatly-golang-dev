@@ -3,12 +3,14 @@ package services
 import (
 	"creatly-task/internal/models"
 	"creatly-task/internal/repo"
+	"errors"
+	"fmt"
 )
 
-// TODO Create deps for uploader file in some storage "cloud"
-
 // TODO Create interface for Tokener
-type Tokener interface{}
+type Tokener interface {
+	GenerateToken(userId string) (string, error)
+}
 
 // TODO Create interface for Cloud Storage
 type CloudStorage interface{}
@@ -33,14 +35,22 @@ func (s *Services) SignUp(user *models.UserSignUpInput) error {
 
 // TODO Implementation SignIn
 func (s *Services) SignIn(user *models.UserSignInInput) (string, error) {
-	// Get Userdata by email from database
-	// s.db.Users.GetUserByCreds(user)
-	// If User not found in DB
-	//     return errors.New("email not found")
-	// If UserPasswordHash != passwordHashDB
-	//     return errors.New("password does not match")
-	// Generate jwt and return tokens
-	return "", nil
+	userFromDB, err := s.db.Users.GetUserByCreds(user.Email)
+	if err != nil {
+		return "", err
+	}
+
+	if userFromDB.Password != user.PasswordHash {
+		fmt.Printf("want password - %s\naccepted - %s\n", userFromDB.Password, user.PasswordHash)
+		return "", errors.New("wrong password")
+	}
+
+	token, err := s.tokener.GenerateToken(userFromDB.UserID.String())
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 func (s *Services) Files() ([]models.FileOut, error) {
