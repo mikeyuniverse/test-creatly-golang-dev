@@ -9,6 +9,7 @@ import (
 
 type Users interface {
 	CreateUser(*models.UserSignUpInput) error
+	GetUserByCreds(email string) (*models.UserSignInOutput, error)
 }
 
 type Tokens interface {
