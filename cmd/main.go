@@ -16,6 +16,7 @@ import (
 const SALT = "923undwpinpwq3bp" // Salt for password hashing
 const JWT_SIGNING_KEY = "aisdbup872d3bib28d3"
 const JWT_TOKEN_TTL = 600 // Seconds
+const JWT_TOKEN_HEADER_NAME = "Authorization"
 
 func main() {
 	config, err := config.New(".env")
@@ -43,7 +44,7 @@ func main() {
 	services := services.New(repo, tokener, storage)
 
 	hasher := hasher.New(SALT)
-	handlers := server.NewHandlers(services, config.Files.Limit, hasher)
+	handlers := server.NewHandlers(services, config.Files.Limit, hasher, JWT_TOKEN_HEADER_NAME)
 
 	server := server.NewServer(config.Server, *handlers)
 
