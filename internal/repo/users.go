@@ -27,7 +27,11 @@ func (u *UserStorage) CreateUser(input *models.UserSignUpInput) error {
 		return err
 	}
 
-	u.db.InsertOne(context.TODO(), input)
+	_, err = u.db.InsertOne(context.TODO(), input)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
