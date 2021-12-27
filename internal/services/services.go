@@ -6,13 +6,25 @@ import (
 )
 
 // TODO Create deps for uploader file in some storage "cloud"
+
+// TODO Create interface for Tokener
+type Tokener interface{}
+
+// TODO Create interface for Cloud Storage
+type CloudStorage interface{}
+
 type Services struct {
-	db *repo.Repo
-	// cloud
+	db      *repo.Repo
+	tokener Tokener
+	cloud   CloudStorage
 }
 
-func New(repo *repo.Repo) *Services {
-	return &Services{db: repo}
+func New(repo *repo.Repo, tokener Tokener, cloud CloudStorage) *Services {
+	return &Services{
+		db:      repo,
+		tokener: tokener,
+		cloud:   cloud,
+	}
 }
 
 func (s *Services) SignUp(user *models.UserSignUpInput) error {
@@ -27,7 +39,6 @@ func (s *Services) SignIn(user *models.UserSignInInput) (string, error) {
 	//     return errors.New("email not found")
 	// If UserPasswordHash != passwordHashDB
 	//     return errors.New("password does not match")
-
 	// Generate jwt and return tokens
 	return "", nil
 }
