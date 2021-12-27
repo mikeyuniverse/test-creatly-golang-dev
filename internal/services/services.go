@@ -79,3 +79,7 @@ func (s *Services) GetUserIdByToken(token string) (int64, error) {
 	}
 	return userId, nil
 }
+
+func (s *Services) ParseToken(token string) error {
+	return nil
+}
