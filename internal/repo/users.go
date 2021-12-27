@@ -5,6 +5,7 @@ import (
 	"creatly-task/internal/models"
 	"creatly-task/internal/mongodb"
 	"errors"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -56,4 +57,24 @@ func (u *UserStorage) checkUserExists(email string) error {
 
 	// TODO Unknown logic: whats doing?
 	return nil
+}
+
+func (u *UserStorage) GetUserByCreds(email string) (*models.UserSignInOutput, error) {
+	result := u.db.FindOne(context.TODO(), bson.M{"email": email})
+
+	if result.Err() != nil {
+		return nil, result.Err()
+	}
+
+	if result.Err() == mongo.ErrNoDocuments {
+		return nil, errors.New("user not found")
+	}
+
+	var user models.UserSignInOutput
+	err := result.Decode(&user)
+	if err != nil {
+		return nil, fmt.Errorf("decode error: %s", err.Error())
+	}
+
+	return &user, nil
 }
