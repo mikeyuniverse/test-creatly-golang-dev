@@ -13,6 +13,7 @@ const (
 	FILE_PREFIX       = "FILE"
 	STORAGE_PREFIX    = "STORAGE"
 	JWT_PREFIX        = "JWT"
+	AUTH_PREFIX       = "AUTH"
 )
 
 type Server struct {
@@ -91,12 +92,27 @@ func newJWTConfig(prefix string) (*JWT, error) {
 	return &j, nil
 }
 
+type Auth struct {
+	Salt         string
+	HeaderUserId string
+}
+
+func newAuthConfig(prefix string) (*Auth, error) {
+	var a Auth
+	err := envconfig.Process(prefix, &a)
+	if err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
+
 type Config struct {
 	Server  *Server
 	Repo    *Repo
 	Files   *File
 	Storage *Storage
 	JWT     *JWT
+	Auth    *Auth
 }
 
 func New(filename string) (*Config, error) {
@@ -130,11 +146,17 @@ func New(filename string) (*Config, error) {
 		return nil, err
 	}
 
+	authConfig, err := newAuthConfig(AUTH_PREFIX)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
 		Server:  server,
 		Repo:    repo,
 		Files:   file,
 		Storage: storage,
 		JWT:     jwtConfig,
+		Auth:    authConfig,
 	}, nil
 }
