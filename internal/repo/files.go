@@ -33,5 +33,9 @@ func (f *FilesRepo) All() ([]models.FileOut, error) {
 	}
 
 	return results, nil
+}
 
+func (f *FilesRepo) AddLog(log *models.FileUploadLogInput) error {
+	_, err := f.db.InsertOne(context.TODO(), log)
+	return err
 }
