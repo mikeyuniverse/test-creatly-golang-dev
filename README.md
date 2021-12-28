@@ -17,14 +17,17 @@ It is necessary to implement a web service that will have the following endpoint
 go run cmd/main.go
 ```
 
+или
+
 ```docker-compose
 docker-compose up --build app
 ```
 
 ## Tests
 
-_Comming soon_
+Comming soon
 
+<!-- 
 ## Commands
 
 Build docker image
@@ -43,4 +46,4 @@ Run docker-compose
 
 ```docker-compose
 docker-compose up -d --remove-orphans app
-```
+``` -->
