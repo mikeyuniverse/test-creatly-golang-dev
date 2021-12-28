@@ -126,22 +126,26 @@ func (h *Handlers) UploadFile(c *gin.Context) {
 		return
 	}
 
-	// Check userID in request context. Added only for authenticated users.
 	userID := c.Keys[h.userHeaderName].(string)
 	if userID == "" {
 		c.JSON(http.StatusUnauthorized, textToMap("invalid userID"))
 		return
 	}
 
-	// READ FILE
-	body, err := readBodyRequest(c.Request.Body)
+	body, err := readBody(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, textToMap("error with read body request"))
+		c.JSON(http.StatusInternalServerError, textToMap("error while read body"))
 		return
 	}
 
 	filename := fmt.Sprintf("%s-%d.png", userID, time.Now().Unix())
 	filesize := c.Request.ContentLength
+
+	if filesize >= int64(h.MaxSizeLimit) {
+		c.JSON(http.StatusBadRequest, textToMap("file to large"))
+		return
+	}
+
 	err = h.services.UploadFile(&models.FileUploadInput{
 		Filename: filename,
 		Size:     filesize,
@@ -182,7 +186,7 @@ func textToMap(text string) map[string]string {
 	return map[string]string{"message": text}
 }
 
-func readBodyRequest(body io.ReadCloser) ([]byte, error) {
+func readBody(body io.ReadCloser) ([]byte, error) {
 	bytes, err := io.ReadAll(body)
 	if err != nil {
 		return []byte{}, err
