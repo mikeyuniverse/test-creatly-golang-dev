@@ -115,7 +115,6 @@ func (h *Handlers) Files(c *gin.Context) {
 }
 
 func (h *Handlers) UploadFile(c *gin.Context) {
-	// Check header Content-Type. Must be "image/jpeg" or "image/png"
 	contentType := c.Request.Header.Get("Content-Type")
 	if contentType != "image/jpeg" && contentType != "image/png" {
 		c.JSON(http.StatusBadRequest, textToMap("invalid content-type"))
