@@ -15,8 +15,9 @@ import (
 // TODO ADD THIS CONSTANTS IN CONFIGURATION
 const SALT = "923undwpinpwq3bp" // Salt for password hashing
 const JWT_SIGNING_KEY = "aisdbup872d3bib28d3"
-const JWT_TOKEN_TTL = 600 // Seconds
+const JWT_TOKEN_TTL = 3600 // Seconds
 const JWT_TOKEN_HEADER_NAME = "Authorization"
+const AUTH_HEADER_USER_ID = "userID"
 
 func main() {
 	config, err := config.New(".env")
@@ -34,7 +35,7 @@ func main() {
 		log.Fatalf(" - - - - - - - STORAGE NOT INIT.\n%s", err)
 	}
 
-	repo := repo.New(db, storage, config.Repo)
+	repo := repo.New(db, config.Repo)
 	if err != nil {
 		log.Fatalf(" - - - - - - - REPOSITORY NOT INIT.\n%s", err)
 	}
@@ -44,7 +45,7 @@ func main() {
 	services := services.New(repo, tokener, storage)
 
 	hasher := hasher.New(SALT)
-	handlers := server.NewHandlers(services, config.Files.Limit, hasher, JWT_TOKEN_HEADER_NAME)
+	handlers := server.NewHandlers(services, config.Files.Limit, hasher, JWT_TOKEN_HEADER_NAME, AUTH_HEADER_USER_ID)
 
 	server := server.NewServer(config.Server, *handlers)
 
