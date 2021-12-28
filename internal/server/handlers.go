@@ -13,10 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const COOKIE_NAME = "token"
-const HEADER_WITH_TOKEN = "Authorization"
-const SIGNING_KEY = "aldnupp12nd2no"
-
 type Hasher interface {
 	Hash(password string) (string, error)
 }
