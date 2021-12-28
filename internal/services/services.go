@@ -13,7 +13,6 @@ type Tokener interface {
 	ParseToken(token string) (string, error)
 }
 
-// TODO Create interface for Cloud Storage
 type CloudStorage interface {
 	UploadFile(file []byte, filesize int64, filename string) (string, error)
 }
@@ -63,7 +62,6 @@ func (s *Services) Files() ([]models.FileOut, error) {
 	return files, nil
 }
 
-// TODO Implementation UploadFile
 func (s *Services) UploadFile(file *models.FileUploadInput) error {
 	url, err := s.cloud.UploadFile(file.FileData, file.Size, file.Filename)
 	if err != nil {

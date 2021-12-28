@@ -188,17 +188,4 @@ func readBodyRequest(body io.ReadCloser) ([]byte, error) {
 		return []byte{}, err
 	}
 	return bytes, nil
-
-	// TODO Need save to temp file?
-	// Create a temporary file within our temp-images directory that follows
-	// a particular naming pattern
-	// tempFile, err := ioutil.TempFile("temp", "upload-*.png")
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, textToMap(err.Error()))
-	// 	return ""
-	// }
-	// defer tempFile.Close()
-
-	// tempFile.Write(bytes)
-	// return tempFile.Name()
 }

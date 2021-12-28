@@ -26,7 +26,6 @@ type Repo struct {
 	Files  Files
 }
 
-// TODO Implementation of interfaces
 func New(db *mongodb.Mongo, config *config.Repo) *Repo {
 	return &Repo{
 		Users:  newUsersRepo(db, config.UsersCollection),
