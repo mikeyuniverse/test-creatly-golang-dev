@@ -55,8 +55,7 @@ func (u *UserStorage) checkUserExists(email string) error {
 		return errors.New("user exists")
 	}
 
-	// TODO Unknown logic: whats doing?
-	return nil
+	return errors.New("checkUserExists: unknown logic")
 }
 
 func (u *UserStorage) GetUserByCreds(email string) (*models.UserSignInOutput, error) {
