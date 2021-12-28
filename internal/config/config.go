@@ -12,6 +12,7 @@ const (
 	REPOSITORY_PREFIX = "MONGO"
 	FILE_PREFIX       = "FILE"
 	STORAGE_PREFIX    = "STORAGE"
+	JWT_PREFIX        = "JWT"
 )
 
 type Server struct {
@@ -75,11 +76,27 @@ func newStorageConfig(prefix string) (*Storage, error) {
 	return &s, nil
 }
 
+type JWT struct {
+	SigninKey       string
+	TokenTTL        int64
+	TokenHeaderName string
+}
+
+func newJWTConfig(prefix string) (*JWT, error) {
+	var j JWT
+	err := envconfig.Process(prefix, &j)
+	if err != nil {
+		return nil, err
+	}
+	return &j, nil
+}
+
 type Config struct {
 	Server  *Server
 	Repo    *Repo
 	Files   *File
 	Storage *Storage
+	JWT     *JWT
 }
 
 func New(filename string) (*Config, error) {
@@ -108,10 +125,16 @@ func New(filename string) (*Config, error) {
 		return nil, err
 	}
 
+	jwtConfig, err := newJWTConfig(JWT_PREFIX)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
 		Server:  server,
 		Repo:    repo,
 		Files:   file,
 		Storage: storage,
+		JWT:     jwtConfig,
 	}, nil
 }
