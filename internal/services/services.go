@@ -5,16 +5,18 @@ import (
 	"creatly-task/internal/repo"
 	"errors"
 	"fmt"
+	"time"
 )
 
-// TODO Create interface for Tokener
 type Tokener interface {
 	GenerateToken(userId string) (string, error)
 	ParseToken(token string) (string, error)
 }
 
 // TODO Create interface for Cloud Storage
-type CloudStorage interface{}
+type CloudStorage interface {
+	UploadFile(file []byte, filesize int64, filename string) (string, error)
+}
 
 type Services struct {
 	db      *repo.Repo
@@ -34,7 +36,6 @@ func (s *Services) SignUp(user *models.UserSignUpInput) error {
 	return s.db.Users.CreateUser(user)
 }
 
-// TODO Implementation SignIn
 func (s *Services) SignIn(user *models.UserSignInInput) (string, error) {
 	userFromDB, err := s.db.Users.GetUserByCreds(user.Email)
 	if err != nil {
@@ -64,12 +65,22 @@ func (s *Services) Files() ([]models.FileOut, error) {
 
 // TODO Implementation UploadFile
 func (s *Services) UploadFile(file *models.FileUploadInput) error {
-	// Upload file to cloud server
-	// err := s.db.Files.AddLogUploadedFile(file)  // Create log for file
-	// if err != nil {
-	// 	// TODO Что делать с ошибкой? Логгировать или возвращать пользователю?
-	// 	return err
-	// }
+	url, err := s.cloud.UploadFile(file.FileData, file.Size, file.Filename)
+	if err != nil {
+		return err
+	}
+
+	err = s.db.Files.AddLog(&models.FileUploadLogInput{
+		Size:       file.Size,
+		UploadDate: time.Now().Unix(),
+		Filename:   file.Filename,
+		UserId:     file.UserId,
+		Url:        url,
+	})
+	if err != nil {
+		return fmt.Errorf("error with log uploaded file - %s", err.Error())
+	}
+
 	return nil
 }
 
