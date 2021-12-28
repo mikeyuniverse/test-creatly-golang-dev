@@ -24,8 +24,8 @@ services:
       - MONGO_USERNAME=admin
       - MONGO_PASSWORD=1234qwe
       - FILE_LIMIT=10485760
-      - STORAGE_ACCESSKEY=AKIAVKX6IQRGRS35VCPY
-      - STORAGE_SECRETKEY=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
+      - STORAGE_ACCESSKEY=<ACCESS KEY>
+      - STORAGE_SECRETKEY=<SECRET KEY>
       - STORAGE_BUCKETNAME=20211226local
       - STORAGE_REGION=eu-north-1
       - STORAGE_TIMEOUT=60s
@@ -39,8 +39,6 @@ services:
     image: mongo:latest
     container_name: mongodb-creatly-dev-compose
     environment:
-      # MONGO_INITDB_ROOT_USERNAME: admin
-      # MONGO_INITDB_ROOT_PASSWORD: 1234qwe
       MONGO_INITDB_DATABASE: creatly_task
     ports:
       - 27018:27017
