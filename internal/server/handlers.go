@@ -5,8 +5,10 @@ import (
 	"creatly-task/internal/services"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,12 +23,13 @@ type Hasher interface {
 
 type Handlers struct {
 	services        *services.Services
-	MaxSizeLimit    int64
+	MaxSizeLimit    int // Bytes
 	hasher          Hasher
 	tokenHeaderName string
+	userHeaderName  string
 }
 
-func NewHandlers(services *services.Services, FileSizeLimit int64, hasher Hasher, tokenHeaderName string) *Handlers {
+func NewHandlers(services *services.Services, FileSizeLimit int, hasher Hasher, tokenHeaderName, userHeaderName string) *Handlers {
 	return &Handlers{
 		services:        services,
 		MaxSizeLimit:    FileSizeLimit,
@@ -93,69 +96,64 @@ func (h *Handlers) AuthMiddleware(c *gin.Context) {
 	token, err := h.getTokenFromHeader(c)
 	if err != nil {
 		c.AbortWithStatus(http.StatusUnauthorized)
+		return
 	}
 
 	userID, err := h.services.ParseToken(token)
 	if err != nil {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, textToMap(err.Error()))
+		return
 	}
 
-	fmt.Println("USER AUTHORIZED - ", userID)
-
-	c.Next()
+	c.Set(h.userHeaderName, userID)
 }
 
 func (h *Handlers) Files(c *gin.Context) {
-	// files, err := h.services.Files()
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, textToMap("error getting file data"))
-	// 	return
-	// }
+	files, err := h.services.Files()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, textToMap("error getting file data"))
+		return
+	}
 
-	// c.JSON(http.StatusOK, files)
-	c.JSON(http.StatusOK, textToMap("access to closed functionality"))
+	c.JSON(http.StatusOK, files)
 }
 
 func (h *Handlers) UploadFile(c *gin.Context) {
-	userID := c.GetInt("userID")
-	if userID == 0 {
-		c.JSON(http.StatusUnauthorized, textToMap("unknown userID"))
+	// Check header Content-Type. Must be "image/jpeg" or "image/png"
+	contentType := c.Request.Header.Get("Content-Type")
+	if contentType != "image/jpeg" && contentType != "image/png" {
+		c.JSON(http.StatusBadRequest, textToMap("invalid content-type"))
 		return
 	}
 
-	file, header, err := c.Request.FormFile("file")
+	// Check userID in request context. Added only for authenticated users.
+	userID := c.Keys[h.userHeaderName].(string)
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, textToMap("invalid userID"))
+		return
+	}
+
+	// READ FILE
+	body, err := readBodyRequest(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, textToMap("file not found"))
+		c.JSON(http.StatusInternalServerError, textToMap("error with read body request"))
 		return
 	}
 
-	filename := header.Filename
-	// TODO Check filename and format of file
-
-	size := header.Size
-	if size >= h.MaxSizeLimit {
-		fmt.Printf("Want filesize - %d\nAccept filesize - %d\n", h.MaxSizeLimit, size)
-		c.JSON(http.StatusBadRequest, textToMap("file too large"))
-		return
-	}
-
+	filename := fmt.Sprintf("%s-%d.png", userID, time.Now().Unix())
+	filesize := c.Request.ContentLength
 	err = h.services.UploadFile(&models.FileUploadInput{
 		Filename: filename,
-		Size:     size,
+		Size:     filesize,
 		UserId:   userID,
-		FileData: file,
+		FileData: body,
 	})
-
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, textToMap("error while saving the file"))
+		c.JSON(http.StatusInternalServerError, textToMap("error with upload file"))
 		return
 	}
 
 	c.JSON(http.StatusOK, textToMap("upload success"))
-}
-
-func textToMap(text string) map[string]string {
-	return map[string]string{"message": text}
 }
 
 func (h *Handlers) getTokenFromHeader(c *gin.Context) (string, error) {
@@ -178,4 +176,29 @@ func (h *Handlers) getTokenFromHeader(c *gin.Context) (string, error) {
 	}
 
 	return headerParts[1], nil
+}
+
+func textToMap(text string) map[string]string {
+	return map[string]string{"message": text}
+}
+
+func readBodyRequest(body io.ReadCloser) ([]byte, error) {
+	bytes, err := io.ReadAll(body)
+	if err != nil {
+		return []byte{}, err
+	}
+	return bytes, nil
+
+	// TODO Need save to temp file?
+	// Create a temporary file within our temp-images directory that follows
+	// a particular naming pattern
+	// tempFile, err := ioutil.TempFile("temp", "upload-*.png")
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, textToMap(err.Error()))
+	// 	return ""
+	// }
+	// defer tempFile.Close()
+
+	// tempFile.Write(bytes)
+	// return tempFile.Name()
 }
