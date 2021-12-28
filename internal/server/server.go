@@ -10,6 +10,7 @@ import (
 type Server struct {
 	httpServer *gin.Engine
 	port       string
+	host       string
 }
 
 func NewServer(config *config.Server, handlers Handlers) *Server {
@@ -24,7 +25,6 @@ func NewServer(config *config.Server, handlers Handlers) *Server {
 
 	files := server.Group("/")
 	{
-
 		files.Use(handlers.AuthMiddleware)
 		files.GET("/files", handlers.Files)
 		files.POST("/upload", handlers.UploadFile)
@@ -33,11 +33,12 @@ func NewServer(config *config.Server, handlers Handlers) *Server {
 	return &Server{
 		httpServer: server,
 		port:       config.Port,
+		host:       config.Host,
 	}
 }
 
 func (s *Server) Start() error {
-	err := s.httpServer.Run(fmt.Sprintf(":%s", s.port))
+	err := s.httpServer.Run(fmt.Sprintf("%s:%s", s.host, s.port))
 	if err != nil {
 		return err
 	}

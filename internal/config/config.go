@@ -18,6 +18,7 @@ const (
 
 type Server struct {
 	Port string
+	Host string
 }
 
 func newServer(prefix string) (*Server, error) {
