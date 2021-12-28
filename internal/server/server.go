@@ -15,8 +15,8 @@ type Server struct {
 
 func NewServer(config *config.Server, handlers Handlers) *Server {
 	server := gin.Default()
-
 	server.MaxMultipartMemory = 8 << 20 // 8 MiB
+
 	auth := server.Group("/")
 	{
 		auth.POST("/sign-up", handlers.SignUp)
