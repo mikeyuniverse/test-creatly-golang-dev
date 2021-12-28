@@ -1,17 +1,14 @@
 package storage
 
 import (
-	"context"
+	"bytes"
 	"creatly-task/internal/config"
 	"fmt"
-	"mime/multipart"
-	"os"
+	"net/http"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 )
@@ -20,6 +17,7 @@ type Storage struct {
 	connection *s3.S3
 	timeout    time.Duration
 	bucketName string
+	region     string
 }
 
 type Config struct {
@@ -56,25 +54,23 @@ func New(cfg *config.Storage) (*Storage, error) {
 		connection: svc,
 		timeout:    cfg.Timeout,
 		bucketName: cfg.BucketName,
+		region:     cfg.Region,
 	}, nil
 }
 
-func (s *Storage) UploadFile(file multipart.File, bucket, key string) error {
-	ctx, _ := context.WithTimeout(context.Background(), s.timeout)
-	out, err := s.connection.PutObjectWithContext(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(key),
-		Body:   file,
+func (s *Storage) UploadFile(file []byte, filesize int64, filename string) (string, error) {
+
+	_, err := s.connection.PutObject(&s3.PutObjectInput{
+		Bucket:               aws.String(s.bucketName),
+		Key:                  aws.String(filename),
+		ACL:                  aws.String("public-read"),
+		Body:                 bytes.NewReader(file),
+		ContentLength:        aws.Int64(filesize),
+		ContentType:          aws.String(http.DetectContentType(file)),
+		ContentDisposition:   aws.String("attachment"),
+		ServerSideEncryption: aws.String("AES256"),
 	})
-	fmt.Println(out)
-	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == request.CanceledErrorCode {
-			// If the SDK can determine the request or retry delay was canceled
-			// by a context the CanceledErrorCode error code will be returned.
-			fmt.Fprintf(os.Stderr, "upload canceled due to timeout, %v\n", err)
-		} else {
-			fmt.Fprintf(os.Stderr, "failed to upload object, %v\n", err)
-		}
-	}
-	return err
+
+	fileUrl := fmt.Sprintf("https://%s.s3-%s.amazonaws.com/%s", s.bucketName, s.region, filename)
+	return fileUrl, err
 }
