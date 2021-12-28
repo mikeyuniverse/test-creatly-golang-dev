@@ -4,7 +4,7 @@ Task - [Task for golang dev (Creatly)](Task.md)
 
 ## Description
 
-It is necessary to implement a web service that will have the following endpoints
+It is necessary to implement a web service that will have the following endpoints.
 
 - POST /sign-up
 - POST /sign-in
@@ -17,5 +17,30 @@ It is necessary to implement a web service that will have the following endpoint
 go run cmd/main.go
 ```
 
+```docker-compose
+docker-compose up --build app
+```
+
 ## Tests
 
+_Comming soon_
+
+## Commands
+
+Build docker image
+
+```dockerfile
+docker build -t creatly-dev .
+```
+
+Run docker image
+
+```docker
+docker run -d -p 8000:8000 creatly-dev
+```
+
+Run docker-compose
+
+```docker-compose
+docker-compose up -d --remove-orphans app
+```
