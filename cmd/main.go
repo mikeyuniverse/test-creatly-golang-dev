@@ -33,12 +33,12 @@ func main() {
 		log.Fatalf(" - - - - - - - REPOSITORY NOT INIT.\n%s", err)
 	}
 
-	tokener := jwtauth.New(JWT_SIGNING_KEY, JWT_TOKEN_TTL)
+	tokener := jwtauth.New(config.JWT)
 
 	services := services.New(repo, tokener, storage)
 
-	hasher := hasher.New(SALT)
-	handlers := server.NewHandlers(services, config.Files.Limit, hasher, JWT_TOKEN_HEADER_NAME, AUTH_HEADER_USER_ID)
+	hasher := hasher.New(config.Auth.Salt)
+	handlers := server.NewHandlers(services, config.Files.Limit, hasher, config.JWT.TokenHeaderName, config.Auth.HeaderUserId)
 
 	server := server.NewServer(config.Server, *handlers)
 
