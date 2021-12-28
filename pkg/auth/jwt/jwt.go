@@ -1,6 +1,7 @@
 package jwtauth
 
 import (
+	"creatly-task/internal/config"
 	"errors"
 	"fmt"
 	"time"
@@ -13,10 +14,10 @@ type JWTTokener struct {
 	tokenTTL  time.Duration
 }
 
-func New(signinKey string, tokenTTL time.Duration) *JWTTokener {
+func New(config *config.JWT) *JWTTokener {
 	return &JWTTokener{
-		signinKey: []byte(signinKey),
-		tokenTTL:  tokenTTL,
+		signinKey: []byte(config.SigninKey),
+		tokenTTL:  time.Second * time.Duration(config.TokenTTL),
 	}
 }
 
