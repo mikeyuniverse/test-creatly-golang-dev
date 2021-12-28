@@ -46,7 +46,7 @@ func newRepo(prefix string) (*Repo, error) {
 }
 
 type File struct {
-	Limit int64
+	Limit int
 }
 
 func newFileConfig(prefix string) (*File, error) {
