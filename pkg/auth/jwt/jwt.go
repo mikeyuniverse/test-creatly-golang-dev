@@ -48,7 +48,7 @@ func (j *JWTTokener) ParseToken(token string) (string, error) {
 		return "", err
 	}
 
-	if acceptedToken.Valid {
+	if !acceptedToken.Valid {
 		return "", errors.New("invalid token")
 	}
 
