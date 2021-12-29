@@ -1,12 +1,15 @@
-FROM golang:1.17-buster
+FROM golang:alpine AS builder
 
-RUN go version
-ENV GOPATH=/
+RUN apk add --update --no-cache make
 
-COPY ./ ./
+WORKDIR /app
+COPY . .
 
-# build go app
 RUN go mod download
-RUN go build -o ./bin/app ./cmd/main.go
+RUN GOOS=linux go build -o ./bin/app ./cmd/main.go
 
-CMD ["./bin/app"]
+FROM alpine:latest AS runner
+
+COPY --from=builder /app/bin/app/ . 
+COPY --from=builder /app/.env .
+CMD [ "./app" ]
