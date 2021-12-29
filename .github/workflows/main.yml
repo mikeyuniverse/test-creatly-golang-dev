@@ -27,5 +27,5 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Unit-Tests
-        run: go test -coverprofile=cover.out -v ./...
+        run: go test -v ./...
 
