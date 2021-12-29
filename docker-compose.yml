@@ -12,28 +12,7 @@ services:
       - mongodb
     volumes:
       - ./bin/:/root/
-    environment:
-      - SERVER_HOST=
-      - SERVER_PORT=8000
-      - MONGO_HOST=mongodb
-      - MONGO_DATABASENAME=creatly_task
-      - MONGO_PORT=27017
-      - MONGO_USERSCOLLECTION=users
-      - MONGO_FILESCOLLECTION=files
-      - MONGO_TOKENSCOLLECTION=tokens
-      - MONGO_USERNAME=admin
-      - MONGO_PASSWORD=1234qwe
-      - FILE_LIMIT=10485760
-      - STORAGE_ACCESSKEY=<ACCESS KEY>
-      - STORAGE_SECRETKEY=<SECRET KEY>
-      - STORAGE_BUCKETNAME=20211226local
-      - STORAGE_REGION=eu-north-1
-      - STORAGE_TIMEOUT=60s
-      - AUTH_SALT=923undwpinpwq3bp
-      - AUTH_HEADERUSERID=userID
-      - JWT_SIGNINGKEY=aisdbup872d3bib28d3
-      - JWT_TOKENTTL=186000
-      - JWT_TOKENHEADERNAME=Authorization
+
 
   mongodb:
     image: mongo:latest
