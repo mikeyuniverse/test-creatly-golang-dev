@@ -23,6 +23,12 @@ go run cmd/main.go
 docker-compose up --build app
 ```
 
+или
+
+```make
+make dcup
+```
+
 ## Tests
 
 Comming soon
