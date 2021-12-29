@@ -3,9 +3,7 @@ SILENT:
 run:
 	go run cmd/main.go
 
-dcup:
-	dbuild
-	docker-compose up -d --remove-orphans app
+
 
 build:
 	go build -o ./bin/app ./cmd/main.go
@@ -23,3 +21,7 @@ dreload:
 	make ddel
 	make dbuild
 	make drun
+
+dcup:
+	make dbuild
+	docker-compose up -d --remove-orphans app
