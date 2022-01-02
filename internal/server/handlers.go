@@ -14,6 +14,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//go:generate mockgen -source=server.go -destination=mocks/mock.go
+
 type Hasher interface {
 	Hash(password string) (string, error)
 }
