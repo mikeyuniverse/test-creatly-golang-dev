@@ -29,3 +29,6 @@ dcup:
 test:
 	go test -coverprofile=cover.out -v ./...
 	go tool cover -func=cover.out
+
+mocks:
+	go generate ./...
