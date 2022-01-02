@@ -18,9 +18,17 @@ type Hasher interface {
 	Hash(password string) (string, error)
 }
 
+type Services interface {
+	SignUp(user *models.UserSignUpInput) error
+	SignIn(user *models.UserSignInInput) (string, error)
+	Files() ([]models.FileOut, error)
+	UploadFile(file *models.FileUploadInput) error
+	ParseToken(token string) (string, error)
+}
+
 type Handlers struct {
-	services        *services.Services
-	MaxSizeLimit    int // Bytes
+	services        Services
+	MaxSizeLimit    int // Bytes count
 	hasher          Hasher
 	tokenHeaderName string
 	userHeaderName  string
