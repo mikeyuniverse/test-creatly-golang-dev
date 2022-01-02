@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -182,7 +183,7 @@ func textToMap(text string) map[string]string {
 }
 
 func readBody(body io.ReadCloser) ([]byte, error) {
-	bytes, err := io.ReadAll(body)
+	bytes, err := ioutil.ReadAll(body)
 	if err != nil {
 		return []byte{}, err
 	}
