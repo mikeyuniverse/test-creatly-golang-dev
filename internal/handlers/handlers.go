@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"creatly-task/internal/models"
-	"creatly-task/internal/services"
 	"errors"
 	"fmt"
 	"io"
@@ -36,7 +35,7 @@ type Handlers struct {
 	userHeaderName  string
 }
 
-func New(services *services.Services, FileSizeLimit int, hasher Hasher, tokenHeaderName, userHeaderName string) *Handlers {
+func New(services Services, FileSizeLimit int, hasher Hasher, tokenHeaderName, userHeaderName string) *Handlers {
 	return &Handlers{
 		services:        services,
 		MaxSizeLimit:    FileSizeLimit,
