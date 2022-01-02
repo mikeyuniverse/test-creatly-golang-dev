@@ -1,4 +1,4 @@
-package server
+package handlers
 
 import (
 	"creatly-task/internal/models"
@@ -14,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:generate mockgen -source=server.go -destination=mocks/mock.go
+//go:generate mockgen -source=handlers.go -destination=mocks/mock.go
 
 type Hasher interface {
 	Hash(password string) (string, error)
@@ -36,7 +36,7 @@ type Handlers struct {
 	userHeaderName  string
 }
 
-func NewHandlers(services *services.Services, FileSizeLimit int, hasher Hasher, tokenHeaderName, userHeaderName string) *Handlers {
+func New(services *services.Services, FileSizeLimit int, hasher Hasher, tokenHeaderName, userHeaderName string) *Handlers {
 	return &Handlers{
 		services:        services,
 		MaxSizeLimit:    FileSizeLimit,
