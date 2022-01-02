@@ -16,7 +16,7 @@ type JWTTokener struct {
 
 func New(config *config.JWT) *JWTTokener {
 	return &JWTTokener{
-		signinKey: []byte(config.SigninKey),
+		signinKey: []byte(config.SigningKey),
 		tokenTTL:  time.Second * time.Duration(config.TokenTTL),
 	}
 }
