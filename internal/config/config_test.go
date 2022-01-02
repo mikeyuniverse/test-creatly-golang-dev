@@ -294,12 +294,14 @@ func Test_newStorageConfig(t *testing.T) {
 			// Compare received config and expect config
 			if !reflect.DeepEqual(config, test.expect) && !test.wantError {
 				fmt.Println("config not equals")
+				fmt.Printf("%+v\n", config)
 				t.FailNow()
 			}
 
 			// Check timeout
 			if test.expect.Timeout == 0 && !test.wantError {
-				fmt.Println("timeout error")
+				fmt.Println("invalid timeout error")
+				fmt.Printf("%+v\n", config)
 				t.FailNow()
 			}
 
@@ -430,24 +432,31 @@ func Test_newAuthConfig(t *testing.T) {
 			err := setEnv(test.envMap)
 			if err != nil {
 				t.FailNow()
+				fmt.Println("error init env")
 			}
 
 			config, err := newAuthConfig(test.prefix)
 			if err != nil && !test.wantError {
 				t.FailNow()
+				fmt.Println("error init config")
 			}
 
 			if !reflect.DeepEqual(config, test.expect) && !test.wantError {
 				t.FailNow()
+				fmt.Println("configs not equals")
+				fmt.Printf("%+v\n", config)
 			}
 
 			if config.HeaderUserId == "" && !test.wantError {
 				t.FailNow()
+				fmt.Println("empty header user id")
+				fmt.Printf("%+v\n", config)
 			}
 
 			err = unsetEnv(test.envMap)
 			if err != nil {
 				t.FailNow()
+				fmt.Printf("error unset env - %s\n", err.Error())
 			}
 		})
 	}
