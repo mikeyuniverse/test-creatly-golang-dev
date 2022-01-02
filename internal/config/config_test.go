@@ -109,20 +109,20 @@ func Test_newRepo(t *testing.T) {
 			name:   "OK: without env vars (all is empty string)",
 			prefix: "REPO",
 			expect: &Repo{
-				Host:             "",
-				Port:             "",
-				DatabaseName:     "",
-				UsersCollection:  "",
-				FilesCollection:  "",
-				TokensCollection: "",
+				Host:             "localhost",
+				Port:             "80908",
+				DatabaseName:     "storage",
+				UsersCollection:  "users",
+				FilesCollection:  "files",
+				TokensCollection: "tokens",
 			},
 			envMap: map[string]string{
-				"REPO_HOST":             "",
-				"REPO_PORT":             "",
-				"REPO_DatabaseName":     "",
-				"REPO_UsersCollection":  "",
-				"REPO_FilesCollection":  "",
-				"REPO_TokensCollection": "",
+				"REPO_HOST":             "localhost",
+				"REPO_PORT":             "80908",
+				"REPO_DatabaseName":     "storage",
+				"REPO_UsersCollection":  "users",
+				"REPO_FilesCollection":  "files",
+				"REPO_TokensCollection": "tokens",
 			},
 			wantError: false,
 		},
@@ -153,21 +153,21 @@ func Test_newRepo(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			err := setEnv(test.envMap)
 			if err != nil {
-				t.FailNow()
+				t.Fatalf("setEnv error - %s\n", err.Error())
 			}
 
 			config, err := newRepo(test.prefix)
 			if err != nil && !test.wantError {
-				t.FailNow()
+				t.Fatalf("config init error - %s\n", err.Error())
 			}
 
 			if !reflect.DeepEqual(config, test.expect) && !test.wantError {
-				t.FailNow()
+				t.Fatalf("configs not equals\nReceived - %+v\nWant - %+v\n", config, test.expect)
 			}
 
 			err = unsetEnv(test.envMap)
 			if err != nil {
-				t.FailNow()
+				t.Fatalf("unset env error - %s\n", err.Error())
 			}
 		})
 	}
@@ -367,32 +367,25 @@ func Test_newJWTConfig(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			err := setEnv(test.envMap)
 			if err != nil {
-				fmt.Println("setEnv error")
-				t.FailNow()
+				t.Fatalf("setEnv error - %s\n", err.Error())
 			}
 
 			config, err := newJWTConfig(test.prefix)
 			if err != nil && !test.wantError {
-				fmt.Printf("config init error - %s\n", err.Error())
-				t.FailNow()
+				t.Fatalf("config init error - %s\n", err.Error())
 			}
 
 			if !reflect.DeepEqual(config, test.expect) && !test.wantError {
-				fmt.Println("config not equals")
-				fmt.Printf("%+v\n", config)
-				t.FailNow()
+				t.Fatalf("configs not equals\nReceived - %+v\nWant - %+v\n", config, test.expect)
 			}
 
 			if (config.TokenHeaderName == "" || config.TokenTTL == 0) && !test.wantError {
-				fmt.Println("empty value in required params")
-				fmt.Printf("%+v\n", config)
-				t.FailNow()
+				t.Fatalf("empty value in required params\nReceived - %+v\nWant - %+v\n", config, test.expect)
 			}
 
 			err = unsetEnv(test.envMap)
 			if err != nil {
-				fmt.Printf("unsetEnv error - %s\n", err.Error())
-				t.FailNow()
+				t.Fatalf("unsetEnv error - %s\n", err.Error())
 			}
 		})
 	}
@@ -438,32 +431,25 @@ func Test_newAuthConfig(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			err := setEnv(test.envMap)
 			if err != nil {
-				t.FailNow()
-				fmt.Println("error init env")
+				t.Fatalf("setEnv error - %s\n", err.Error())
 			}
 
 			config, err := newAuthConfig(test.prefix)
 			if err != nil && !test.wantError {
-				t.FailNow()
-				fmt.Println("error init config")
+				t.Fatalf("error init config - %s\n", err.Error())
 			}
 
 			if !reflect.DeepEqual(config, test.expect) && !test.wantError {
-				t.FailNow()
-				fmt.Println("configs not equals")
-				fmt.Printf("%+v\n", config)
+				t.Fatalf("configs not equals\nReceived - %+v\nWant - %+v\n", config, test.expect)
 			}
 
 			if config.HeaderUserId == "" && !test.wantError {
-				t.FailNow()
-				fmt.Println("empty header user id")
-				fmt.Printf("%+v\n", config)
+				t.Fatalf("empty header user id\nConfig - %+v\n", config)
 			}
 
 			err = unsetEnv(test.envMap)
 			if err != nil {
-				t.FailNow()
-				fmt.Printf("error unset env - %s\n", err.Error())
+				t.Fatalf("error unset env - %s\n", err.Error())
 			}
 		})
 	}
