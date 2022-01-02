@@ -106,7 +106,7 @@ func Test_newRepo(t *testing.T) {
 		wantError bool
 	}{
 		{
-			name:   "OK: without env vars (all is empty string)",
+			name:   "OK",
 			prefix: "REPO",
 			expect: &Repo{
 				Host:             "localhost",
@@ -140,10 +140,10 @@ func Test_newRepo(t *testing.T) {
 			envMap: map[string]string{
 				"REPO_HOST":             "localhost",
 				"REPO_PORT":             "80908",
-				"REPO_DatabaseName":     "storage",
-				"REPO_UsersCollection":  "users",
-				"REPO_FilesCollection":  "files",
-				"REPO_TokensCollection": "tokens",
+				"REPO_DATABASENAME":     "storage",
+				"REPO_USERSCOLLECTION":  "users",
+				"REPO_FILESCOLLECTION":  "files",
+				"REPO_TOKENSCOLLECTION": "tokens",
 			},
 			wantError: true,
 		},
@@ -241,11 +241,11 @@ func Test_newStorageConfig(t *testing.T) {
 			name:   "OK",
 			prefix: "STORAGE",
 			envMap: map[string]string{
-				"STORAGE_AccessKey":  "179g381vdyo",
-				"STORAGE_SecretKey":  "18e721gf2fg01g711378gfjksog",
-				"STORAGE_Region":     "eu-west",
-				"STORAGE_BucketName": "my-bucket",
-				"STORAGE_Timeout":    "60s",
+				"STORAGE_ACCESSKEY":  "179g381vdyo",
+				"STORAGE_SECRETKEY":  "18e721gf2fg01g711378gfjksog",
+				"STORAGE_REGION":     "eu-west",
+				"STORAGE_BUCKETNAME": "my-bucket",
+				"STORAGE_TIMEOUT":    "60s",
 			},
 			expect: &Storage{
 				AccessKey:  "179g381vdyo",
@@ -260,11 +260,11 @@ func Test_newStorageConfig(t *testing.T) {
 			name:   "FAIL: accessKey not initialize",
 			prefix: "STORAGE",
 			envMap: map[string]string{
-				"STORAGE_AccessKey":  "",
-				"STORAGE_SecretKey":  "18e721gf2fg01g711378gfjksog",
-				"STORAGE_Region":     "eu-west",
-				"STORAGE_BucketName": "my-bucket",
-				"STORAGE_Timeout":    "60s",
+				"STORAGE_ACCESSKEY":  "",
+				"STORAGE_SECRETKEY":  "18e721gf2fg01g711378gfjksog",
+				"STORAGE_REGION":     "eu-west",
+				"STORAGE_BUCKETNAME": "my-bucket",
+				"STORAGE_TIMEOUT":    "60s",
 			},
 			expect: &Storage{
 				AccessKey:  "179g381vdyo",
@@ -335,9 +335,9 @@ func Test_newJWTConfig(t *testing.T) {
 			name:   "OK",
 			prefix: "JWT",
 			envMap: map[string]string{
-				"JWT_SigningKey":      "190fh[9iqn",
-				"JWT_TokenTTL":        "6000",
-				"JWT_TokenHeaderName": "Authorization",
+				"JWT_SIGNINGKEY":      "190fh[9iqn",
+				"JWT_TOKENTTL":        "6000",
+				"JWT_TOKENHEADERNAME": "Authorization",
 			},
 			expect: &JWT{
 				SigningKey:      "190fh[9iqn",
@@ -350,9 +350,9 @@ func Test_newJWTConfig(t *testing.T) {
 			name:   "FAIL: empty header name",
 			prefix: "JWT",
 			envMap: map[string]string{
-				"JWT_SigningKey":      "190fh[9iqn",
-				"JWT_TokenTTL":        "6000",
-				"JWT_TokenHeaderName": "",
+				"JWT_SIGNINGKEY":      "190fh[9iqn",
+				"JWT_TOKENTTL":        "6000",
+				"JWT_TOKENHEADERNAME": "",
 			},
 			expect: &JWT{
 				SigningKey:      "190fh[9iqn",
@@ -403,8 +403,8 @@ func Test_newAuthConfig(t *testing.T) {
 			name:   "OK",
 			prefix: "AUTH",
 			envMap: map[string]string{
-				"AUTH_Salt":         "23ffiuvbsa",
-				"AUTH_HeaderUserId": "user",
+				"AUTH_SALT":         "23ffiuvbsa",
+				"AUTH_HEADERUSERID": "user",
 			},
 			expect: &Auth{
 				Salt:         "23ffiuvbsa",
@@ -416,8 +416,8 @@ func Test_newAuthConfig(t *testing.T) {
 			name:   "FAIL: empty HeaderUserId",
 			prefix: "AUTH",
 			envMap: map[string]string{
-				"AUTH_Salt":         "23ffiuvbsa",
-				"AUTH_HeaderUserId": "user",
+				"AUTH_SALT":         "23ffiuvbsa",
+				"AUTH_HEADERUSERID": "user",
 			},
 			expect: &Auth{
 				Salt:         "23ffiuvbsa",
@@ -545,19 +545,18 @@ func Test_New(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			config, err := New(test.filepath)
 			if err != nil {
-				fmt.Printf("init config error - %s\n", err.Error())
-				t.FailNow()
+				t.Fatalf("init config error - %s\n", err.Error())
 			}
 
 			// Compare received and expected configs
 			if !reflect.DeepEqual(config, test.expect) && !test.wantError {
 				fmt.Println("configs not equals")
-				fmt.Printf("%+v\n", config.Server)
-				fmt.Printf("%+v\n", config.Repo)
-				fmt.Printf("%+v\n", config.Auth)
-				fmt.Printf("%+v\n", config.Files)
-				fmt.Printf("%+v\n", config.Storage)
-				fmt.Printf("%+v\n", config.JWT)
+				fmt.Printf("Server - %+v\n", config.Server)
+				fmt.Printf("Repo - %+v\n", config.Repo)
+				fmt.Printf("Auth - %+v\n", config.Auth)
+				fmt.Printf("Files - %+v\n", config.Files)
+				fmt.Printf("Storage - %+v\n", config.Storage)
+				fmt.Printf("JWT - %+v\n", config.JWT)
 				t.FailNow()
 			}
 
@@ -565,7 +564,7 @@ func Test_New(t *testing.T) {
 
 			err = unsetEnv(test.envMap)
 			if err != nil {
-				t.FailNow()
+				t.Fatalf("unsetEnv error - %s\n", err.Error())
 			}
 		})
 	}
