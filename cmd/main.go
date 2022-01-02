@@ -2,6 +2,7 @@ package main
 
 import (
 	"creatly-task/internal/config"
+	"creatly-task/internal/handlers"
 	"creatly-task/internal/mongodb"
 	"creatly-task/internal/repo"
 	"creatly-task/internal/server"
@@ -38,9 +39,9 @@ func main() {
 	services := services.New(repo, tokener, storage)
 
 	hasher := hasher.New(config.Auth.Salt)
-	handlers := server.NewHandlers(services, config.Files.Limit, hasher, config.JWT.TokenHeaderName, config.Auth.HeaderUserId)
+	handlers := handlers.New(services, config.Files.Limit, hasher, config.JWT.TokenHeaderName, config.Auth.HeaderUserId)
 
-	server := server.NewServer(config.Server, *handlers)
+	server := server.New(config.Server, handlers)
 
 	if err := server.Start(); err != nil {
 		log.Fatal(err)
