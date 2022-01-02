@@ -367,24 +367,31 @@ func Test_newJWTConfig(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			err := setEnv(test.envMap)
 			if err != nil {
+				fmt.Println("setEnv error")
 				t.FailNow()
 			}
 
 			config, err := newJWTConfig(test.prefix)
 			if err != nil && !test.wantError {
+				fmt.Printf("config init error - %s\n", err.Error())
 				t.FailNow()
 			}
 
 			if !reflect.DeepEqual(config, test.expect) && !test.wantError {
+				fmt.Println("config not equals")
+				fmt.Printf("%+v\n", config)
 				t.FailNow()
 			}
 
 			if (config.TokenHeaderName == "" || config.TokenTTL == 0) && !test.wantError {
+				fmt.Println("empty value in required params")
+				fmt.Printf("%+v\n", config)
 				t.FailNow()
 			}
 
 			err = unsetEnv(test.envMap)
 			if err != nil {
+				fmt.Printf("unsetEnv error - %s\n", err.Error())
 				t.FailNow()
 			}
 		})
