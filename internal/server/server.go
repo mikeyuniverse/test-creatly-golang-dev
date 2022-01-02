@@ -13,7 +13,15 @@ type Server struct {
 	host       string
 }
 
-func NewServer(config *config.Server, handlers Handlers) *Server {
+type Handlers interface {
+	SignUp(c *gin.Context)
+	SignIn(c *gin.Context)
+	AuthMiddleware(c *gin.Context)
+	Files(c *gin.Context)
+	UploadFile(c *gin.Context)
+}
+
+func New(config *config.Server, handlers Handlers) *Server {
 	server := gin.Default()
 	server.MaxMultipartMemory = 8 << 20 // 8 MiB
 
