@@ -71,8 +71,10 @@ func (h *Handlers) SignUp(c *gin.Context) {
 func (h *Handlers) SignIn(c *gin.Context) {
 	var user models.UserSignInInput
 
-	err := c.Bind(&user)
-	if err != nil {
+	fmt.Printf("%+v\n", user)
+
+	err := c.BindJSON(&user)
+	if err != nil || (user.Email == "" || user.PasswordHash == "") {
 		fmt.Printf("\n\n%+v\n", user)
 		c.JSON(http.StatusBadRequest, textToMap("invalid credentials"))
 		return
