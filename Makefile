@@ -27,5 +27,5 @@ dcup:
 	docker-compose up -d --remove-orphans app
 
 test:
-	go test -coverprofile=cover.out ./...
+	go test -coverprofile=cover.out -v ./...
 	go tool cover -func=cover.out
