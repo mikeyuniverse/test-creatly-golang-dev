@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+//go:generate mockgen -source=services.go -destination=mocks/mock.go
+
 type Tokener interface {
 	GenerateToken(userId string) (string, error)
 	ParseToken(token string) (string, error)
@@ -80,14 +82,6 @@ func (s *Services) UploadFile(file *models.FileUploadInput) error {
 	}
 
 	return nil
-}
-
-func (s *Services) GetUserIdByToken(token string) (int64, error) {
-	userId, err := s.db.Tokens.GetUserIDByToken(token)
-	if err != nil {
-		return 0, err
-	}
-	return userId, nil
 }
 
 func (s *Services) ParseToken(token string) (string, error) {
