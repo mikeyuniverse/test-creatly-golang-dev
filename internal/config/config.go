@@ -79,7 +79,7 @@ func newStorageConfig(prefix string) (*Storage, error) {
 }
 
 type JWT struct {
-	SigninKey       string
+	SigningKey      string
 	TokenTTL        int64
 	TokenHeaderName string
 }
@@ -131,7 +131,6 @@ func New(filename string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	file, err := newFileConfig(FILE_PREFIX)
 	if err != nil {
 		return nil, err
