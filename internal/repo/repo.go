@@ -6,6 +6,8 @@ import (
 	"creatly-task/internal/mongodb"
 )
 
+//go:generate mockgen -source=repo.go -destination=mocks/mock.go
+
 type Users interface {
 	CreateUser(*models.UserSignUpInput) error
 	GetUserByCreds(email string) (*models.UserSignInOutput, error)
