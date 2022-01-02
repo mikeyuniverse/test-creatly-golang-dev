@@ -49,21 +49,18 @@ func (h *Handlers) SignUp(c *gin.Context) {
 
 	err := c.BindJSON(&input)
 	if err != nil {
-		fmt.Printf("\n\n%+v\n", input)
 		c.JSON(http.StatusBadRequest, textToMap("invalid input"))
 		return
 	}
 
 	input.Password, err = h.hasher.Hash(input.Password)
 	if err != nil {
-		fmt.Println("ERROR: ", err.Error())
 		c.JSON(http.StatusInternalServerError, textToMap("error while encrypting password"))
 		return
 	}
 
 	err = h.services.SignUp(&input)
 	if err != nil {
-		fmt.Println("ERROR: ", err.Error())
 		c.JSON(http.StatusInternalServerError, textToMap("error while creating an account"))
 		return
 	}
