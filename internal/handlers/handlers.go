@@ -41,6 +41,7 @@ func New(services Services, FileSizeLimit int, hasher Hasher, tokenHeaderName, u
 		MaxSizeLimit:    FileSizeLimit,
 		hasher:          hasher,
 		tokenHeaderName: tokenHeaderName,
+		userHeaderName:  userHeaderName,
 	}
 }
 
@@ -127,6 +128,12 @@ func (h *Handlers) UploadFile(c *gin.Context) {
 	contentType := c.Request.Header.Get("Content-Type")
 	if contentType != "image/jpeg" && contentType != "image/png" {
 		c.JSON(http.StatusBadRequest, textToMap("invalid content-type"))
+		return
+	}
+
+	userIdValue := c.Keys[h.userHeaderName]
+	if userIdValue == nil {
+		c.JSON(http.StatusUnauthorized, textToMap("userID not found"))
 		return
 	}
 
