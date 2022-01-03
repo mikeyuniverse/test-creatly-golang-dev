@@ -31,25 +31,9 @@ make dcup
 
 ## Tests
 
-Comming soon
-
-<!-- 
-## Commands
-
-Build docker image
-
-```dockerfile
-docker build -t creatly-dev .
-```
-
-Run docker image
-
-```docker
-docker run -d -p 8000:8000 creatly-dev
-```
-
-Run docker-compose
-
-```docker-compose
-docker-compose up -d --remove-orphans app
-``` -->
+|Package|Percent|
+|---|---|
+|TOTAL|83.2 %|
+|Config|76.9 %|
+|Handlers|86.4 %|
+|Services|85.2 %|
