@@ -17,13 +17,13 @@ It is necessary to implement a web service that will have the following endpoint
 go run cmd/main.go
 ```
 
-или
+or
 
 ```docker-compose
 docker-compose up --build app
 ```
 
-или
+or
 
 ```make
 make dcup
